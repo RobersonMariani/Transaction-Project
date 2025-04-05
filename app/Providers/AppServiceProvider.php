@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Modules\Transaction\Repositories\TransactionRepository;
+use App\Modules\Transaction\Repositories\TransactionRepositoryInterface;
 use App\Modules\User\Repositories\UserRepository;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -16,6 +18,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             UserRepositoryInterface::class,
             UserRepository::class
+        );
+        
+        $this->app->bind(
+            TransactionRepositoryInterface::class,
+            TransactionRepository::class
         );
     }
 
