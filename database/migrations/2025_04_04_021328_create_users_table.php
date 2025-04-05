@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('type', ['common', 'shopkeeper']);
             $table->decimal('wallet_balance', 10, 2)->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
