@@ -6,7 +6,6 @@ use App\Modules\User\DTOs\CreateUserDTO;
 use App\Modules\User\Models\User;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use App\Modules\User\Services\UserService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Mockery;
 use Tests\TestCase;
