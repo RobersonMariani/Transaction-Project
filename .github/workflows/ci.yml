@@ -23,35 +23,51 @@ jobs:
           --health-retries=3
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: 8.3
-        extensions: mbstring, pdo_mysql, zip
-        coverage: none
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3
+          extensions: mbstring, pdo_mysql, zip
+          coverage: none
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
-    - name: Copy .env
-      run: cp .env.example .env
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
 
-    - name: Generate key
-      run: php artisan key:generate
+      - name: Copy .env file
+        run: cp .env.example .env
 
-    - name: Run migrations
-      run: php artisan migrate --force
+      - name: Set DB_HOST for CI
+        run: echo "DB_HOST=mysql" >> .env
 
-    - name: Run Tests
-      run: php artisan test
+      - name: Generate application key
+        run: php artisan key:generate
 
-    - name: Run PHPStan (Static Analysis)
-      run: ./vendor/bin/phpstan analyse --no-progress --level=max app
+      - name: Clear cache
+        run: |
+          php artisan config:clear
+          php artisan cache:clear
 
-    - name: Run PHPMD (Code Mess Detection)
-      run: ./vendor/bin/phpmd app text cleancode,codesize,design,naming,unusedcode
+      - name: Run migrations
+        run: php artisan migrate --force
 
-    - name: Run PHP-CS-Fixer (Dry Run)
-      run: ./vendor/bin/php-cs-fixer fix --dry-run --diff
+      - name: Run Feature and Unit Tests
+        run: php artisan test
+
+      - name: Run PHPStan (Static Analysis)
+        run: ./vendor/bin/phpstan analyse --no-progress --level=max app
+
+      - name: Run PHPMD (Code Mess Detection)
+        run: ./vendor/bin/phpmd app text cleancode,codesize,design,naming,unusedcode
+
+      - name: Run PHP-CS-Fixer (Dry Run)
+        run: ./vendor/bin/php-cs-fixer fix --dry-run --diff
