@@ -1,0 +1,62 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: transaction-app
+    volumes:
+      - .:/var/www/html
+    ports:
+      - 9000:9000
+    depends_on:
+      - mysql
+    networks:
+      - transaction
+
+  queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: transaction-queue
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+    networks:
+      - transaction
+    entrypoint: ["sh", "./docker/php/entrypoint.queue.sh"]
+
+  nginx:
+    image: nginx:alpine
+    container_name: transaction-nginx
+    ports:
+      - 8080:80
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - transaction
+
+  mysql:
+    image: mysql:8.0
+    container_name: transaction-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: transaction
+      MYSQL_USER: transaction
+      MYSQL_PASSWORD: transaction
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - transaction
+
+volumes:
+  dbdata:
+
+networks:
+  transaction:
