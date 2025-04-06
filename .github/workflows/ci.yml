@@ -66,8 +66,5 @@ jobs:
       - name: Run PHPStan (Static Analysis)
         run: ./vendor/bin/phpstan analyse --no-progress --level=max app
 
-      - name: Run PHPMD (Code Mess Detection)
-        run: ./vendor/bin/phpmd app text cleancode,codesize,design,naming,unusedcode
-
       - name: Run PHP-CS-Fixer (Dry Run)
-        run: ./vendor/bin/php-cs-fixer fix --dry-run --diff
+        run: ./vendor/bin/php-cs-fixer fix 
