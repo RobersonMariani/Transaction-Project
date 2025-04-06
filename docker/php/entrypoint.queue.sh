@@ -6,19 +6,17 @@ until nc -z mysql 3306; do
   sleep 2
 done
 
-# Composer deps (se volume montado)
-if [ ! -d "vendor" ]; then
-  composer install --no-interaction --prefer-dist --optimize-autoloader
-fi
+# Verifica se o Composer já gerou o autoload
+if [ ! -f "vendor/autoload.php" ]; then
+  echo "Aguardando o autoload do Composer ser gerado..."
 
-# Gera .env e key se não existir
-if [ ! -f ".env" ]; then
-  cp .env.example .env
-  php artisan key:generate
-fi
+  # Aguarda até o arquivo existir
+  while [ ! -f "vendor/autoload.php" ]; do
+    sleep 2
+  done
 
-# Permissões
-chown -R www-data:www-data storage bootstrap/cache
+  echo "Autoload encontrado. Continuando..."
+fi
 
 echo "Iniciando o Laravel Queue Worker..."
 

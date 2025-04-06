@@ -24,9 +24,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copia o entrypoint
-COPY docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 WORKDIR /var/www/html
 
 # EntryPoint
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
