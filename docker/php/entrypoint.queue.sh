@@ -21,4 +21,4 @@ fi
 echo "Iniciando o Laravel Queue Worker..."
 
 # Não executa migrate nem npm, só inicia o queue
-php artisan queue:work --tries=3 --timeout=60 --verbose --no-interaction
+php artisan queue:work --tries=3 --timeout=60 --verbose --no-interaction --queue=default,notifications
