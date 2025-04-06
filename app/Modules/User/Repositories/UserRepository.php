@@ -4,6 +4,7 @@ namespace App\Modules\User\Repositories;
 
 use App\Modules\User\DTOs\CreateUserDTO;
 use App\Modules\User\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -21,5 +22,10 @@ class UserRepository implements UserRepositoryInterface
     public function findById(int $id): ?User
     {
         return User::find($id);
+    }
+
+    public function all(): Collection
+    {
+        return User::all();
     }
 }

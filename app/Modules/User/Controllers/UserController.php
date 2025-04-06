@@ -13,6 +13,13 @@ class UserController extends Controller
         protected UserService $userService
     ) {}
 
+    public function index()
+    {
+        $users = $this->userService->all();
+
+        return response()->json($users);
+    }
+
     public function store(CreateUserRequest $request)
     {
         $dto = new CreateUserDTO(
