@@ -12,7 +12,10 @@ use Illuminate\Queue\SerializesModels;
 
 class SendTransferNotification implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public int $tries = 5; // Quantidade de tentativas
     public int $backoff = 10; // Tempo de espera entre tentativas (em segundos)
@@ -20,7 +23,8 @@ class SendTransferNotification implements ShouldQueue
     public function __construct(
         protected string $to,
         protected string $message
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {

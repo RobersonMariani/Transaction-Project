@@ -12,7 +12,8 @@ class TransactionController extends Controller
 {
     public function __construct(
         protected TransactionService $transactionService
-    ) {}
+    ) {
+    }
 
     public function transfer(TransferRequest $request): JsonResponse
     {

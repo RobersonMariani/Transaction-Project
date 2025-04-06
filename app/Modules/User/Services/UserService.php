@@ -12,7 +12,8 @@ class UserService
 {
     public function __construct(
         protected UserRepositoryInterface $userRepository
-    ) {}
+    ) {
+    }
 
     public function create(CreateUserDTO $data): User
     {

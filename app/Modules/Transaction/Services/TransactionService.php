@@ -18,7 +18,8 @@ class TransactionService
     public function __construct(
         protected TransactionRepositoryInterface $transactionRepository,
         protected UserRepositoryInterface $userRepository
-    ) {}
+    ) {
+    }
 
     /**
      * Realiza uma transferência entre usuários.

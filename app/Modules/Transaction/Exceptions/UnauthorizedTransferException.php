@@ -3,6 +3,7 @@
 namespace App\Modules\Transaction\Exceptions;
 
 use RuntimeException;
+
 /**
  * Class UnauthorizedTransferException
  *
