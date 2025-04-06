@@ -52,13 +52,13 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
+      - name: Run migrations
+        run: php artisan migrate --force
+
       - name: Clear cache
         run: |
           php artisan config:clear
           php artisan cache:clear
-
-      - name: Run migrations
-        run: php artisan migrate --force
 
       - name: Run Feature and Unit Tests
         run: php artisan test
