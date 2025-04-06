@@ -15,7 +15,12 @@ class TransferTest extends TestCase
     {
         // Mock da resposta externa
         Http::fake([
-            'https://util.devi.tools/api/v2/authorize' => Http::response(['message' => 'Autorizado'], 200),
+            'https://util.devi.tools/api/v2/authorize' => Http::response([
+                'status' => 'success',
+                'data' => [
+                    'authorization' => true
+                ]
+            ], 200),
             'https://util.devi.tools/api/v1/notify' => Http::response([], 200),
         ]);
 
@@ -53,7 +58,12 @@ class TransferTest extends TestCase
     public function test_transfer_should_fail_if_not_authorized()
     {
         Http::fake([
-            'https://util.devi.tools/api/v2/authorize' => Http::response(['message' => 'Não autorizado'], 200),
+            'https://util.devi.tools/api/v2/authorize' => Http::response([
+                'status' => 'fail',
+                'data' => [
+                    'authorization' => false
+                ]
+            ], 200),
         ]);
 
         $payer = User::factory()->create([
@@ -82,7 +92,12 @@ class TransferTest extends TestCase
     public function test_transfer_should_fail_if_payer_is_shopkeeper()
     {
         Http::fake([
-            'https://util.devi.tools/api/v2/authorize' => Http::response(['message' => 'Autorizado'], 200),
+            'https://util.devi.tools/api/v2/authorize' => Http::response([
+                'status' => 'success',
+                'data' => [
+                    'authorization' => true
+                ]
+            ], 200),
         ]);
 
         $payer = User::factory()->create([
@@ -110,7 +125,12 @@ class TransferTest extends TestCase
     public function test_transfer_should_fail_if_insufficient_balance()
     {
         Http::fake([
-            'https://util.devi.tools/api/v2/authorize' => Http::response(['message' => 'Autorizado'], 200),
+            'https://util.devi.tools/api/v2/authorize' => Http::response([
+                'status' => 'success',
+                'data' => [
+                    'authorization' => true
+                ]
+            ], 200),
         ]);
 
         $payer = User::factory()->create([

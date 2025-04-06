@@ -6,6 +6,7 @@ use App\Modules\Transaction\DTOs\TransferDTO;
 use App\Modules\Transaction\Exceptions\InsufficientBalanceException;
 use App\Modules\Transaction\Exceptions\ShopkeeperTransferException;
 use App\Modules\Transaction\Exceptions\UnauthorizedTransferException;
+use App\Modules\Transaction\Jobs\SendTransferNotification;
 use App\Modules\Transaction\Repositories\TransactionRepositoryInterface;
 use App\Modules\User\Repositories\UserRepositoryInterface;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,8 @@ class TransactionService
 
             // Mock de autorização externa
             $authResponse = Http::get('https://util.devi.tools/api/v2/authorize');
-            if ($authResponse->json('message') !== 'Autorizado') {
+
+            if (!$authResponse->json('data.authorization')) {
                 throw new UnauthorizedTransferException();
             }
 
@@ -52,10 +54,10 @@ class TransactionService
             $transaction = $this->transactionRepository->create($dto);
 
             // Mock de notificação
-            Http::post('https://util.devi.tools/api/v1/notify', [
-                'to' => $payee->email,
-                'message' => 'Você recebeu uma transferência de R$ ' . number_format($dto->value, 2, ',', '.'),
-            ]);
+            SendTransferNotification::dispatch(
+                $payee->email,
+                'Você recebeu uma transferência de R$ ' . number_format($dto->value, 2, ',', '.')
+            );
 
             return $transaction;
         });
