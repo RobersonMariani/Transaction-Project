@@ -4,8 +4,10 @@ namespace Database\Factories\Modules\User\Models;
 
 use App\Modules\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Modules\User\Models\User>
+ */
 class UserFactory extends Factory
 {
     protected $model = User::class;

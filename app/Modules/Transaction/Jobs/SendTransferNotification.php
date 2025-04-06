@@ -32,6 +32,7 @@ class SendTransferNotification implements ShouldQueue
 
             $data = $response->json();
 
+            /** @var array{status?: string} $data */
             if (($data['status'] ?? '') !== 'success') {
                 Log::warning('Falha no envio de notificação', [
                     'to' => $this->to,
@@ -52,12 +53,17 @@ class SendTransferNotification implements ShouldQueue
         }
     }
 
-    // app/Modules/Transaction/Jobs/SendTransferNotification.php
+    /**
+     * @return string
+     */
     public function getTo(): string
     {
         return $this->to;
     }
 
+    /**
+     * @return string
+     */
     public function getMessage(): string
     {
         return $this->message;

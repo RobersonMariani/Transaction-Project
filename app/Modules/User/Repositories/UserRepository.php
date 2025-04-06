@@ -10,22 +10,34 @@ class UserRepository implements UserRepositoryInterface
 {
     public function create(CreateUserDTO $data): User
     {
-        return User::create([
+        /** @var User $user */
+        $user = User::create([
             'name' => $data->name,
             'cpf' => $data->cpf,
             'email' => $data->email,
             'password' => bcrypt($data->password),
             'type' => $data->type,
         ]);
+
+        return $user;
     }
 
     public function findById(int $id): ?User
     {
-        return User::find($id);
+        /** @var User|null $user */
+        $user = User::find($id);
+
+        return $user;
     }
 
+    /**
+     * @return Collection<int, User>
+     */
     public function all(): Collection
     {
-        return User::all();
+        /** @var Collection<int, User> $users */
+        $users = User::all();
+
+        return $users;
     }
 }

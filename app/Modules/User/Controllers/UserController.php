@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\User\Requests\CreateUserRequest;
 use App\Modules\User\Services\UserService;
 use App\Modules\User\DTOs\CreateUserDTO;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
@@ -13,25 +14,28 @@ class UserController extends Controller
         protected UserService $userService
     ) {}
 
-    public function index()
+    public function index(): JsonResponse
     {
         $users = $this->userService->all();
 
         return response()->json($users);
     }
 
-    public function store(CreateUserRequest $request)
+    public function store(CreateUserRequest $request): JsonResponse
     {
         $dto = new CreateUserDTO(
-            name: $request->name,
-            cpf: $request->cpf,
-            email: $request->email,
-            password: $request->password,
-            type: $request->type
+            name: $request->getName(),
+            email: $request->getEmail(),
+            cpf: $request->getCpf(),
+            password: $request->getPassword(),
+            type: $request->getType(),
         );
 
         $user = $this->userService->create($dto);
 
-        return response()->json($user, 201);
+        return response()->json([
+            'message' => 'User Created Successfully.',
+            'data' => $user
+        ], 201);
     }
 }

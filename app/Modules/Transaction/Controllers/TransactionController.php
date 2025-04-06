@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Transaction\Requests\TransferRequest;
 use App\Modules\Transaction\Services\TransactionService;
 use App\Modules\Transaction\DTOs\TransferDTO;
+use Illuminate\Http\JsonResponse;
 
 class TransactionController extends Controller
 {
@@ -13,12 +14,12 @@ class TransactionController extends Controller
         protected TransactionService $transactionService
     ) {}
 
-    public function transfer(TransferRequest $request)
+    public function transfer(TransferRequest $request): JsonResponse
     {
         $dto = new TransferDTO(
-            payer: $request->payer,
-            payee: $request->payee,
-            value: $request->value
+            payer: $request->getPayer(),
+            payee: $request->getPayee(),
+            value: $request->getValue()
         );
 
         $transaction = $this->transactionService->transfer($dto);

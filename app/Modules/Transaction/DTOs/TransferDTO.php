@@ -2,7 +2,10 @@
 
 namespace App\Modules\Transaction\DTOs;
 
-class TransferDTO
+/**
+ * DTO responsável por carregar os dados de uma transferência.
+ */
+readonly class TransferDTO
 {
     public function __construct(
         public int $payer,
