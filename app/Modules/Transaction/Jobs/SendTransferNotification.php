@@ -51,4 +51,15 @@ class SendTransferNotification implements ShouldQueue
             throw $e;
         }
     }
+
+    // app/Modules/Transaction/Jobs/SendTransferNotification.php
+    public function getTo(): string
+    {
+        return $this->to;
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

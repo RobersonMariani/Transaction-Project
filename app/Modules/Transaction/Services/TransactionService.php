@@ -57,7 +57,7 @@ class TransactionService
             SendTransferNotification::dispatch(
                 $payee->email,
                 'Você recebeu uma transferência de R$ ' . number_format($dto->value, 2, ',', '.')
-            );
+            )->onQueue('notifications');
 
             return $transaction;
         });

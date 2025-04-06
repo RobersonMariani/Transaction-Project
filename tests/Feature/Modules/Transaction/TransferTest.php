@@ -5,6 +5,8 @@ namespace Tests\Feature\Modules\Transaction;
 use App\Modules\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use App\Modules\Transaction\Jobs\SendTransferNotification;
 use Tests\TestCase;
 
 class TransferTest extends TestCase
@@ -13,15 +15,18 @@ class TransferTest extends TestCase
 
     public function test_successful_transfer()
     {
-        // Mock da resposta externa
+        Queue::fake();
+
         Http::fake([
             'https://util.devi.tools/api/v2/authorize' => Http::response([
                 'status' => 'success',
                 'data' => [
-                    'authorization' => true
-                ]
+                    'authorization' => true,
+                ],
             ], 200),
-            'https://util.devi.tools/api/v1/notify' => Http::response([], 200),
+            'https://util.devi.tools/api/v1/notify' => Http::response([
+                'status' => 'success',
+            ], 200),
         ]);
 
         $payer = User::factory()->create([
@@ -53,6 +58,10 @@ class TransferTest extends TestCase
 
         $this->assertEquals(800.0, $payer->fresh()->wallet_balance);
         $this->assertEquals(700.0, $payee->fresh()->wallet_balance);
+
+        Queue::assertPushed(SendTransferNotification::class, function ($job) use ($payee) {
+            return $job->getTo() === $payee->email;
+        });
     }
 
     public function test_transfer_should_fail_if_not_authorized()
@@ -61,8 +70,8 @@ class TransferTest extends TestCase
             'https://util.devi.tools/api/v2/authorize' => Http::response([
                 'status' => 'fail',
                 'data' => [
-                    'authorization' => false
-                ]
+                    'authorization' => false,
+                ],
             ], 200),
         ]);
 
@@ -83,6 +92,7 @@ class TransferTest extends TestCase
         ]);
 
         $response->assertStatus(403);
+
         $this->assertDatabaseMissing('transactions', [
             'payer_id' => $payer->id,
             'payee_id' => $payee->id,
@@ -95,8 +105,8 @@ class TransferTest extends TestCase
             'https://util.devi.tools/api/v2/authorize' => Http::response([
                 'status' => 'success',
                 'data' => [
-                    'authorization' => true
-                ]
+                    'authorization' => true,
+                ],
             ], 200),
         ]);
 
@@ -116,7 +126,7 @@ class TransferTest extends TestCase
             'value' => 100,
         ]);
 
-        $response->assertStatus(403); // Lojista não pode transferir
+        $response->assertStatus(403);
         $response->assertJsonFragment([
             'message' => 'Shopkeepers are not allowed to transfer funds.',
         ]);
@@ -128,8 +138,8 @@ class TransferTest extends TestCase
             'https://util.devi.tools/api/v2/authorize' => Http::response([
                 'status' => 'success',
                 'data' => [
-                    'authorization' => true
-                ]
+                    'authorization' => true,
+                ],
             ], 200),
         ]);
 
@@ -149,7 +159,7 @@ class TransferTest extends TestCase
             'value' => 100,
         ]);
 
-        $response->assertStatus(422); // Saldo insuficiente
+        $response->assertStatus(422);
         $response->assertJsonFragment([
             'message' => 'Insufficient balance.',
         ]);
